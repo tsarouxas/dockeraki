@@ -9,7 +9,7 @@ down:
 
 stop: down
 
-install: start healthcheck
+install: start healthcheck autoinstall
 
 configure:
 	docker-compose -f docker-compose.yml -f wp-auto-config.yml run --rm wp-auto-config

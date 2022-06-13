@@ -7,7 +7,7 @@ restart:
 down:
 	docker-compose down
 
-down: stop
+stop: down
 
 install: start healthcheck
 
@@ -32,6 +32,10 @@ healthcheck:
 
 reset: clean
 
-clean-logs:
-	rm -rf logs/nginx/*
+rebuild: restart
 
+stopall: #TODO: run it manually
+	docker kill $(docker ps -q)
+
+clear:
+	rm -rf logs/nginx/*

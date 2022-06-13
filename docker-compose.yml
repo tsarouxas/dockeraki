@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.3'
 services:
 
   wordpress:
@@ -11,7 +11,7 @@ services:
     environment:
       - WORDPRESS_DB_NAME=${COMPOSE_PROJECT_NAME:-wordpress}
       - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX:-wp_}
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST:-mysql}
+      - WORDPRESS_DB_HOST=mysql
       - WORDPRESS_DB_USER=${DATABASE_USER:-root}
       - WORDPRESS_DB_PASSWORD=${DATABASE_PASSWORD:-password}
     depends_on:
@@ -47,13 +47,17 @@ services:
 
   # Command line interface to wordpress
   wpcli:
+    depends_on:
+      - wordpress
+      - mysql
     build: ./wpcli/
     image: wpcli
     container_name: ${COMPOSE_PROJECT_NAME}_wpcli
     volumes:
       - wordpress:/var/www/html
     environment:
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST:-mysql}
+      - WORDPRESS_DB_HOST=mysql
+      - WORDPRESS_DB_NAME=${COMPOSE_PROJECT_NAME:-wordpress}
       - WORDPRESS_DB_USER=${DATABASE_USER:-root}
       - WORDPRESS_DB_PASSWORD=${DATABASE_PASSWORD:-password}
     working_dir: /var/www/html
@@ -71,7 +75,25 @@ services:
       - WAIT_HOSTS_TIMEOUT=${WAIT_HOSTS_TIMEOUT:-300}
       - WAIT_SLEEP_INTERVAL=${WAIT_SLEEP_INTERVAL:-30}
       - WAIT_HOST_CONNECT_TIMEOUT=${WAIT_HOST_CONNECT_TIMEOUT:-30}
+
+  redis:
+    image: redis:latest
+    restart: always
+    expose:
+      - 6379
+    command:
+      - redis-server
+      - --save 60 1
+      - --loglevel warning
+      - --maxmemory 128mb
+      - --maxmemory-policy allkeys-lru
+
+    volumes:
+      - redis:/var/lib/redis
+      - redis:/data
+      #- ./redis.conf:/usr/local/etc/redis/redis.conf
 volumes:
   wordpress:
   dbdata:
+  redis:
 

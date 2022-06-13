@@ -51,6 +51,10 @@ make stop
 make clean
 ```
 
+
+##Debug
+# When WPCli refuses to connect to database
+docker-compose run --rm wpcli config list
 ## References
 https://github.com/mjstealey/wordpress-nginx-docker
 https://docs.docker.com/compose/wordpress/

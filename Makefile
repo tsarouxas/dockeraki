@@ -39,3 +39,6 @@ stopall: #TODO: run it manually
 
 clear:
 	rm -rf logs/nginx/*
+
+destroy:
+	docker-compose down --volumes
